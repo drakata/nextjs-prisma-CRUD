@@ -2,14 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from "../../lib/prisma"
 
 type Data = {
-  name: string
-}
+  message: string;
+  error?: string;
+};
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
+    req: NextApiRequest,
+    res: NextApiResponse<Data>
 ) {
-  const {title, content} = req.body
+  const { title, content } = req.body;
 
   try {
     // CREATE
@@ -18,10 +19,10 @@ export default async function handler(
         title,
         content
       }
-    })
-    res.status(200).json({ message: 'Note created' })
+    });
+    res.status(200).json({ message: 'Note created' });
   } catch (error) {
-    console.log(error)
-    res.status(400).json({ message: error })
+    console.log(error);
+    res.status(400).json({ message: 'Error creating note', error: (error as Error).message });
   }
 }

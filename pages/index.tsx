@@ -73,7 +73,7 @@ const Home: NextPage<Notes> = ({ notes }) => {
     }
   }
 
-  async function updateNote(title, content, id) {
+  async function updateNote(title: string, content: string, id: string) {
     //console.log(title, content, id)
     setForm({title, content, id})
     setNewNote(false)
@@ -159,18 +159,29 @@ export default Home
 
 // Server side rendering on every request
 export const getServerSideProps: GetServerSideProps = async () => {
-  // READ all notes from DB
-  const notes = await prisma?.note.findMany({
-    select: {
-      title: true,
-      id: true,
-      content: true
-    }
-  })
+  try {
+    // Attempt to read all notes from the database
+    const notes = await prisma?.note.findMany({
+      select: {
+        title: true,
+        id: true,
+        content: true
+      }
+    });
 
-  return {
-    props: {
-      notes
-    }
+    return {
+      props: {
+        notes: notes || []
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching notes:', error);
+
+    // Return an empty array or handle the error as needed
+    return {
+      props: {
+        notes: []
+      }
+    };
   }
-}
+};
